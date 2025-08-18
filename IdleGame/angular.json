@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "IdleGame": {
+    "idlegame": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -61,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "IdleGame:build:production"
+              "buildTarget": "idlegame:build:production"
             },
             "development": {
-              "buildTarget": "IdleGame:build:development"
+              "buildTarget": "idlegame:build:development"
             }
           },
           "defaultConfiguration": "development"
