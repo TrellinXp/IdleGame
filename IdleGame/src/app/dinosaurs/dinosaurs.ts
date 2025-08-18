@@ -3,6 +3,7 @@ import { NgFor} from '@angular/common';
 import firebase from 'firebase/compat/app';
 import { environment } from '../environments/environment';
 import { collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
+import { DinosaurClass } from './dinosaurClass';
 @Component({
   selector: 'app-dinosaurs',
   imports: [NgFor],
@@ -29,11 +30,31 @@ export class Dinosaurs {
     const db = getFirestore(firebase.app());
     const querySnapshot = await getDocs(collection(db, "dinosaurs"));
     querySnapshot.forEach((doc) => {
-      this.dinosaurs.push(doc.data());
+      var dinosaur = doc.data();
+      dinosaur['id'] = doc.id 
+      this.dinosaurs.push(dinosaur);
     });
     console.log("Finished fetching dinosaurs from Firestore")
     this.dinosaurs.sort((a, b) => a.name.localeCompare(b.name));  
   }
+
+  levelDinosaur(dinosaur: DinosaurClass): void {
+    console.log("Level Dinosaur"); 
+    dinosaur.level = dinosaur.level + 1;   
+    updateDinosaur(dinosaur); // Call the function to update the dinosaur
+  }
+
 }
+
+  async function updateDinosaur(dinosaur: DinosaurClass) {
+    const db = getFirestore(firebase.app());
+    const dinosaurRef = doc(db, "dinosaurs", dinosaur.id);
+
+    await updateDoc(dinosaurRef, {
+      level : dinosaur.level
+    });
+    console.log("Dinosaur updated in Firestore:", dinosaur.name);
+  }
+
 
 
