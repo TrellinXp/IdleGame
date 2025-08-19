@@ -4,35 +4,63 @@ import firebase from 'firebase/compat/app';
 import { environment } from '../environments/environment';
 import { collection, doc, getDocs, getFirestore, updateDoc } from "firebase/firestore";
 import { DinosaurClass } from './dinosaurClass';
+import { getAnalytics } from "firebase/analytics";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { getAuth } from '@angular/fire/auth';
+import { AuthService } from '../auth';
+
 @Component({
   selector: 'app-dinosaurs',
-  imports: [NgFor],
+  imports: [NgFor, FormsModule,
+        ReactiveFormsModule],
   templateUrl: './dinosaurs.html',
   styleUrl: './dinosaurs.scss'
 })
 export class Dinosaurs {
   dinosaurs: any[] = [];
+  name: string | null;
+  uid: string;
 
-  constructor() {
+  constructor(public authService: AuthService) {
+    this.name = '';
+    this.uid = '';
     // Initialize Firebase
     if (!firebase.apps.length) {
-      firebase.initializeApp(environment.firebase);
+      const app = firebase.initializeApp(environment.firebase);
+      const analytics = getAnalytics(app);
     } else {
       firebase.app(); // if already initialized, use that one
       console.log("Firebase already initialized");
     }
 
-    this.fetchDinosaurs();
+    const auth = getAuth();
+    auth.onAuthStateChanged((user) => {
+      if (user != null) {
+        this.name = user.displayName;
+        this.uid = user.uid;
+        this.dinosaurs = [];
+        this.fetchDinosaurs();
+      } else {
+        this.name = "Unknown";
+      }
+    });
+
     console.log("Dinosaurs component initialized");
   }
 
   async fetchDinosaurs(): Promise<void> {
+
+    console.log("Get Dinosaurs for user: "+this.uid);
+  
+
     const db = getFirestore(firebase.app());
     const querySnapshot = await getDocs(collection(db, "dinosaurs"));
     querySnapshot.forEach((doc) => {
       var dinosaur = doc.data();
       dinosaur['id'] = doc.id 
-      this.dinosaurs.push(dinosaur);
+      if(dinosaur['userId'] == this.uid) {
+        this.dinosaurs.push(dinosaur);
+      }
     });
     console.log("Finished fetching dinosaurs from Firestore")
     this.dinosaurs.sort((a, b) => a.name.localeCompare(b.name));  
