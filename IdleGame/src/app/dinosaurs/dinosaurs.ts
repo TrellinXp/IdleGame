@@ -18,30 +18,18 @@ import { AuthService } from '../auth';
 })
 export class Dinosaurs {
   dinosaurs: any[] = [];
-  name: string | null;
   uid: string;
 
-  constructor(public authService: AuthService) {
-    this.name = '';
+  constructor() {
     this.uid = '';
-    // Initialize Firebase
-    if (!firebase.apps.length) {
-      const app = firebase.initializeApp(environment.firebase);
-      const analytics = getAnalytics(app);
-    } else {
-      firebase.app(); // if already initialized, use that one
-      console.log("Firebase already initialized");
-    }
-
     const auth = getAuth();
     auth.onAuthStateChanged((user) => {
       if (user != null) {
-        this.name = user.displayName;
         this.uid = user.uid;
         this.dinosaurs = [];
         this.fetchDinosaurs();
       } else {
-        this.name = "Unknown";
+        this.dinosaurs = [];
       }
     });
 
@@ -51,8 +39,6 @@ export class Dinosaurs {
   async fetchDinosaurs(): Promise<void> {
 
     console.log("Get Dinosaurs for user: "+this.uid);
-  
-
     const db = getFirestore(firebase.app());
     const querySnapshot = await getDocs(collection(db, "dinosaurs"));
     querySnapshot.forEach((doc) => {

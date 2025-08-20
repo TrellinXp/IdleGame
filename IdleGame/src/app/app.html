@@ -74,6 +74,11 @@
     margin-bottom: 3rem;
   }
 
+  .column {
+    float: left;
+    width: 33.33%;
+  }
+
   .login {
     display: flex;
   }
@@ -172,8 +177,15 @@
 
 </style>
 <div class="login">
-  <h1>Idle Dinosaur</h1> 
-  <app-login></app-login>
+    <div class="column">
+
+    </div>
+  <div class="column">
+    <h1>Idle Dinosaur</h1>
+  </div>
+  <div class="column">
+    <app-login></app-login>
+  </div>
 </div>
  <main class="main">
   <div class="content">

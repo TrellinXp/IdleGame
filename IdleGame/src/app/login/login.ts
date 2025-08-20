@@ -4,7 +4,7 @@ import firebase from 'firebase/compat/app';
 import { environment } from '../environments/environment';
 import { getAnalytics } from "firebase/analytics";
 import { AuthService } from '../auth';
-import { getAuth } from '@angular/fire/auth';
+import { getAuth, onAuthStateChanged } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -16,29 +16,32 @@ export class Login {
   loginForm: FormGroup;
   errorMessage: string = '';
   userid: string = '';
-
+  displayName: string = '';
   constructor(
     public authService: AuthService,
     private fb: FormBuilder
   ) {
-      // Initialize Firebase
-      if (!firebase.apps.length) {
-        const app = firebase.initializeApp(environment.firebase);
-        const analytics = getAnalytics(app);
-      } else {
-        firebase.app(); // if already initialized, use that one
-        console.log("Firebase already initialized");
-      }
-
       this.loginForm = this.fb.group({
       email: ['', Validators.required ],
       password: ['',Validators.required]
     });
   }
 
+  ngOnInit() {
+    this.authService.user$.subscribe(user => {
+      if(user && this.authService.user?.displayName) {
+        this.displayName = this.authService.user?.displayName;
+      }
+    })
+  }
+
   tryLogin(value: any) {
     this.authService.doLogin(value)
-    this.userid = this.authService.getLogedInUserId();
+  }
+
+  tryLogout() {
+    this.authService.doLogout();
+    this.displayName = "";
   }
 }
 

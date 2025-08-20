@@ -28,7 +28,7 @@ export class RegisterComponent {
    }
 
    tryRegister(value: any){
-     this.authService.doRegister(value)
+     this.authService.doRegister(value);
    }
 
 }

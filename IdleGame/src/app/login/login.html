@@ -1,5 +1,6 @@
-@if (userid) {
-  Hallo {{userid}}
+@if (displayName) {
+  Hallo {{displayName}}
+  <button (click)="tryLogout()">Logout</button>
 }
 @else {
 <form [formGroup]="loginForm">
